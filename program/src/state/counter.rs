@@ -1,13 +1,15 @@
 use core::mem::size_of;
 use pinocchio::{instruction::Seed, program_error::ProgramError, pubkey::Pubkey};
 
-#[repr(C)]
+#[repr(u8)]
+#[derive(Debug)]
 pub enum StateKey {
     Uninitialized = 0,
     Counter = 1,
 }
 
 #[repr(C)]
+#[derive(Debug)]
 pub struct Counter {
     pub key: StateKey,
     pub bump: u8,
@@ -20,19 +22,11 @@ impl Counter {
         size_of::<StateKey>() + size_of::<u8>() + size_of::<Pubkey>() + size_of::<u64>();
 
     #[inline(always)]
-    pub fn load_mut(bytes: &mut [u8]) -> Result<&mut Self, ProgramError> {
-        if bytes.len() != Counter::LEN || bytes[0] != StateKey::Counter as u8 {
+    pub fn load_mut(bytes: &mut [u8], check_key: bool) -> Result<&mut Self, ProgramError> {
+        if bytes.len() != Counter::LEN || (check_key && bytes[0] != StateKey::Counter as u8) {
             return Err(ProgramError::InvalidAccountData);
         }
         Ok(unsafe { &mut *core::mem::transmute::<*mut u8, *mut Self>(bytes.as_mut_ptr()) })
-    }
-
-    #[inline(always)]
-    pub fn load_bump(bytes: &[u8]) -> Result<u8, ProgramError> {
-        if bytes.len() != Counter::LEN || bytes[0] != StateKey::Counter as u8 {
-            return Err(ProgramError::InvalidAccountData);
-        }
-        Ok(bytes[1])
     }
 
     #[inline(always)]

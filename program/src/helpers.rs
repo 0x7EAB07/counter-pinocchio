@@ -6,7 +6,6 @@ use pinocchio::{
     sysvars::{rent::Rent, Sysvar},
 };
 extern crate alloc;
-use alloc::vec::Vec;
 use pinocchio_system::instructions::CreateAccount;
 
 pub trait AccountCheck {
@@ -31,7 +30,7 @@ pub struct WritableAccount;
 impl AccountCheck for WritableAccount {
     fn check(account: &AccountInfo) -> Result<(), ProgramError> {
         if !account.is_writable() {
-            return Err(ProgramError::InvalidAccountOwner);
+            return Err(ProgramError::Immutable);
         }
         Ok(())
     }
@@ -74,9 +73,8 @@ impl AccountCheck for ProgramAccount {
 pub struct PdaAccount;
 
 impl PdaAccount {
-    pub fn check(account: &AccountInfo, seeds_with_bump: &[Seed]) -> Result<(), ProgramError> {
-        let seed_slices: Vec<&[u8]> = seeds_with_bump.iter().map(|seed| &**seed).collect();
-        let pda_address = create_program_address(&seed_slices, &crate::ID)?;
+    pub fn check(account: &AccountInfo, seeds_with_bump: &[&[u8]]) -> Result<(), ProgramError> {
+        let pda_address = create_program_address(seeds_with_bump, &crate::ID)?;
         if account.key() != &pda_address {
             return Err(ProgramError::InvalidAccountOwner);
         }

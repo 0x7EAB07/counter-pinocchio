@@ -1,0 +1,18 @@
+[package]
+name = "counter-cli"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "counter"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = { workspace = true }
+clap = { workspace = true }
+counter-pinocchio = { features = ["no-entrypoint"], path = "../program" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+solana-client = { workspace = true }
+solana-sdk = { workspace = true }
+tokio = { workspace = true }

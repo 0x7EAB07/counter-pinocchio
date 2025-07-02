@@ -20,7 +20,7 @@ impl<'a> TryFrom<&'a [AccountInfo]> for CreateAccounts<'a> {
     type Error = ProgramError;
 
     fn try_from(accounts: &'a [AccountInfo]) -> Result<Self, Self::Error> {
-        let [counter, authority, system_program, _] = accounts else {
+        let [counter, authority, system_program] = accounts else {
             return Err(ProgramError::NotEnoughAccountKeys);
         };
 
@@ -73,7 +73,7 @@ impl<'a> Create<'a> {
 
     pub fn process(&mut self) -> Result<(), ProgramError> {
         let mut data = self.accounts.counter.try_borrow_mut_data()?;
-        let counter = Counter::load_mut(data.as_mut())?;
+        let counter = Counter::load_mut(data.as_mut(), false)?;
         counter.set_inner(self.accounts.authority.key().clone(), self.counter_bump);
         Ok(())
     }

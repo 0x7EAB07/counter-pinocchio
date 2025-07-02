@@ -14,16 +14,20 @@ impl<'a> TryFrom<&'a [AccountInfo]> for IncreaseAccounts<'a> {
     type Error = ProgramError;
 
     fn try_from(accounts: &'a [AccountInfo]) -> Result<Self, Self::Error> {
-        let [counter, authority, _] = accounts else {
+        let [counter, authority] = accounts else {
             return Err(ProgramError::NotEnoughAccountKeys);
         };
 
         WritableAccount::check(counter)?;
         ProgramAccount::check(counter)?;
-        let counter_bump = Counter::load_bump(&counter.try_borrow_data()?)?;
+
+        let counter_data = counter.try_borrow_data()?;
+        // Hint: Can be optimized to just load the bump.
+        let counter_account = Counter::load(&counter_data)?;
+
         PdaAccount::check(
             counter,
-            &Counter::signer_seeds_with_bump(authority.key(), &[counter_bump]),
+            &Counter::seeds_with_bump(authority.key(), &[counter_account.bump]),
         )?;
 
         Ok(Self { counter, authority })
@@ -71,7 +75,7 @@ impl<'a> Increase<'a> {
 
     pub fn process(&mut self) -> Result<(), ProgramError> {
         let mut data = self.accounts.counter.try_borrow_mut_data()?;
-        let counter = Counter::load_mut(data.as_mut())?;
+        let counter = Counter::load_mut(data.as_mut(), true)?;
         counter.increase_by(self.instruction_data.amount)?;
         Ok(())
     }
