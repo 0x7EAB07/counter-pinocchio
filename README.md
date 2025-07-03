@@ -6,8 +6,6 @@
 [![Size](https://img.shields.io/badge/Size-13.85kb-AEFF23?style=for-the-badge&logoColor=white)](https://github.com/anza-xyz/pinocchio)
 [![Twitter](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/0x7eab07)
 
-A Rust monorepo containing a Solana counter program and a CLI tool to interact with it.
-
 The Solana program is ~13.85kb, impressive size for what it does.
 
 - Same example in anchor would be ~190kb.
