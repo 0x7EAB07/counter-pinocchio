@@ -74,7 +74,7 @@ impl<'a> Create<'a> {
     pub fn process(&mut self) -> Result<(), ProgramError> {
         let mut data = self.accounts.counter.try_borrow_mut_data()?;
         let counter = Counter::load_mut(data.as_mut(), false)?;
-        counter.set_inner(self.accounts.authority.key().clone(), self.counter_bump);
+        counter.set_inner(*self.accounts.authority.key(), self.counter_bump);
         Ok(())
     }
 }

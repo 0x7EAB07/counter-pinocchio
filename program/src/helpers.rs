@@ -83,19 +83,19 @@ impl PdaAccount {
 }
 
 pub trait ProgramAccountInit {
-    fn init<'a, T: Sized>(
+    fn init<T: Sized>(
         payer: &AccountInfo,
         account: &AccountInfo,
-        seeds: &[Seed<'a>],
+        seeds: &[Seed],
         space: usize,
     ) -> Result<(), ProgramError>;
 }
 
 impl ProgramAccountInit for ProgramAccount {
-    fn init<'a, T: Sized>(
+    fn init<T: Sized>(
         payer: &AccountInfo,
         account: &AccountInfo,
-        seeds: &[Seed<'a>],
+        seeds: &[Seed],
         space: usize,
     ) -> Result<(), ProgramError> {
         CreateAccount {

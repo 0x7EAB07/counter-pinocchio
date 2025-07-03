@@ -40,6 +40,14 @@ jobs:
           toolchain: stable
           components: rustfmt, clippy
 
+      - name: Install Solana CLI
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSfL https://solana-install.solana.workers.dev | bash
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+
+      - name: Build Solana program
+        run: cargo build-sbf
+
       - name: Run tests
         run: cargo test --features test-default
 
