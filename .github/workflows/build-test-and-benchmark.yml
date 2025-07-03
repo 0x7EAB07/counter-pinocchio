@@ -38,7 +38,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.local/share/solana
-          key: ${{ runner.os }}-solana-toolchain-1.18.18
+          key: ${{ runner.os }}-solana-toolchain
 
       - name: Install Solana CLI
         run: |
