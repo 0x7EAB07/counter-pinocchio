@@ -19,7 +19,7 @@ extern crate alloc;
 use alloc::vec;
 
 pub const PROGRAM: Pubkey = Pubkey::new_from_array(ID);
-pub const PAYER: Pubkey = pubkey!("Co11111111111111111111111111111111111111111");
+pub const AUTHORITY: Pubkey = pubkey!("Co11111111111111111111111111111111111111111");
 
 pub fn mollusk() -> Mollusk {
     let mollusk = Mollusk::new(&PROGRAM, "../target/deploy/counter_pinocchio");
@@ -35,7 +35,7 @@ fn test_create_counter() {
 
     // Create the PDA
     let (counter_pda, _bump) =
-        Pubkey::find_program_address(&Counter::seeds(&PAYER.to_bytes()), &PROGRAM);
+        Pubkey::find_program_address(&Counter::seeds(&AUTHORITY.to_bytes()), &PROGRAM);
 
     //Initialize the accounts
     let authority_account = Account::new(1 * LAMPORTS_PER_SOL, 0, &system_program);
@@ -44,7 +44,7 @@ fn test_create_counter() {
     //Push the accounts in to the instruction_accounts vec!
     let ix_accounts = vec![
         AccountMeta::new(counter_pda, false),             // counter
-        AccountMeta::new(PAYER, true),                    // authority
+        AccountMeta::new(AUTHORITY, true),                // authority
         AccountMeta::new_readonly(system_program, false), // system program
     ];
 
@@ -56,7 +56,7 @@ fn test_create_counter() {
     // Create tx_accounts vec
     let tx_accounts = &vec![
         (counter_pda, counter_account.clone()),
-        (PAYER, authority_account.clone()),
+        (AUTHORITY, authority_account.clone()),
         (system_program, system_account.clone()),
     ];
 
@@ -76,7 +76,7 @@ fn test_increase_counter() {
     // Create the PDA
     // Create the PDA
     let (counter_pda, bump) =
-        Pubkey::find_program_address(&Counter::seeds(&PAYER.to_bytes()), &PROGRAM);
+        Pubkey::find_program_address(&Counter::seeds(&AUTHORITY.to_bytes()), &PROGRAM);
 
     //Initialize the accounts
     let authority_account = Account::new(1 * LAMPORTS_PER_SOL, 0, &system_program);
@@ -88,7 +88,7 @@ fn test_increase_counter() {
     );
 
     let counter = Counter {
-        authority: PAYER.to_bytes(),
+        authority: AUTHORITY.to_bytes(),
         bump,
         key: StateKey::Counter,
         value: 0,
@@ -99,7 +99,7 @@ fn test_increase_counter() {
     //Push the accounts in to the instruction_accounts vec!
     let ix_accounts = vec![
         AccountMeta::new(counter_pda, false),
-        AccountMeta::new(PAYER, true),
+        AccountMeta::new(AUTHORITY, true),
     ];
 
     let mut ix_data = vec![*Increase::DISCRIMINATOR];
@@ -110,7 +110,7 @@ fn test_increase_counter() {
     // Create tx_accounts vec
     let tx_accounts = &vec![
         (counter_pda, counter_account.clone()),
-        (PAYER, authority_account.clone()),
+        (AUTHORITY, authority_account.clone()),
     ];
 
     let update_res =
